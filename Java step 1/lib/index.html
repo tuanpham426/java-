@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Xem Thời Tiết</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
+    .weather-app {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      width: 320px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #4f46e5;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #46e56b;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #4338ca;
+      transform: translateY(-1px);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #902626;
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .city {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .temp {
+      font-size: 30px;
+      font-weight: bold;
+      color: #ef4444;
+      margin: 8px 0;
+    }
+
+    .desc {
+      text-transform: capitalize;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-app">
+    <h2>🌤 Xem Thời Tiết</h2>
+    <input id="city" placeholder="Nhập tên thành phố">
+    <button onclick="getWeather()">Xem</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const apiKey = "4ded658a8a8f9eb7f38fab3216593d1c";
+
+    function getWeather() {
+      const city = document.getElementById("city").value.trim();
+      const result = document.getElementById("result");
+
+      if (!city) {
+        result.style.display = "block";
+        result.innerHTML = "❗ Vui lòng nhập tên thành phố.";
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=vi`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.cod !== 200) {
+            result.style.display = "block";
+            result.innerHTML = "❌ Không tìm thấy thành phố.";
+            return;
+          }
+
+          result.style.display = "block";
+          result.innerHTML = `
+            <div class="city">${data.name}</div>
+            <div class="temp">${Math.round(data.main.temp)}°C</div>
+            <div class="desc">${data.weather[0].description}</div>
+          `;
+        })
+        .catch(() => {
+          result.style.display = "block";
+          result.innerHTML = "❌ Lỗi kết nối đến máy chủ.";
+        });
+    }
+  </script>
+</body>
+</html>
